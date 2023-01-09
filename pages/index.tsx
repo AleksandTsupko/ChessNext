@@ -1,6 +1,6 @@
 import { Auth, ThemeSupa } from '@supabase/auth-ui-react'
 import { useSession, useSupabaseClient } from '@supabase/auth-helpers-react'
-import Account from '../components/Account'
+import Account from '../components/account/Account'
 
 
 const Home = () => {
@@ -13,7 +13,7 @@ const Home = () => {
     <div className="container" style={{ padding: '50px 0 100px 0' }}>
       {!session ? (
         <Auth 
-        providers={["github"]}
+        // providers={["github"]}
         supabaseClient={supabase} 
         appearance={{ theme: ThemeSupa }} 
         theme="dark" />
