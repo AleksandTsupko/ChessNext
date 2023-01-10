@@ -6,8 +6,8 @@ const Home = () => {
     return (
           <div className={styles.gamesGrid}>
             <GameSelection type={"chess"}/>
-            <GameSelection type={"chess"}/>
-            <GameSelection type={"chess"}/>
+            <GameSelection type={"checkers"}/>
+            <GameSelection type={"bughouse chess"}/>
             <GameSelection type={"chess"}/>
             <GameSelection type={"chess"}/>
             <GameSelection type={"chess"}/>

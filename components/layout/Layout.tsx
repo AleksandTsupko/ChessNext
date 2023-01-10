@@ -41,7 +41,7 @@ const Layout: FC<LayoutProps> = ({ children }) => {
                     <div className={styles.header__nav}>
                         <div className={styles.nav__item}><Link href={"/rules"}>Rules</Link></div>
                         <div className={styles.nav__item}><Link href={"/about"}>About</Link></div>
-                        <div className={styles.nav__item} onClick={() => supabase.auth.signOut()}>Sign out</div>
+                        <div className={styles.nav__item} onClick={() => supabase.auth.signOut()}><span>Sign out</span></div>
                     </div>
                 </div>
             )}

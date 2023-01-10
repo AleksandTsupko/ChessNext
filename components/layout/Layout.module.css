@@ -25,7 +25,7 @@
     justify-content: space-evenly;
 }
 
-.nav__item a {
+.nav__item * {
     white-space: nowrap;
     color: aliceblue;
     cursor: pointer;
