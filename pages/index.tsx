@@ -3,15 +3,16 @@ import { useSession, useSupabaseClient } from '@supabase/auth-helpers-react'
 import Account from '../components/account/Account'
 import Layout from '../components/layout/Layout'
 import { useEffect, useState } from 'react'
+import Home from '../components/home/Home'
 
 
-const Home = () => { 
+const Index = () => {
 
   return (
-      <Layout> 
-        <h2>Home page</h2>
-      </Layout>
+    <Layout>
+      <Home />
+    </Layout>
   )
 }
 
-export default Home
+export default Index
