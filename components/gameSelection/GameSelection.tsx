@@ -1,7 +1,6 @@
 import { useSession } from '@supabase/auth-helpers-react'
 import { FC, useRef, useState } from 'react'
 import styles from "./GameSelection.module.css"
-import socketIOClient from "socket.io-client";
 import { useRouter } from 'next/router';
 
 interface IGameSelectionProps {
@@ -12,7 +11,6 @@ const GameSelection: FC<IGameSelectionProps> = ({ type }) => {
     const [addButtons, setAddButtons] = useState(false)
     const session = useSession()
     let backgroundUrl = ""
-    let io: any
     const router = useRouter()
 
     switch (type) {
@@ -35,11 +33,8 @@ const GameSelection: FC<IGameSelectionProps> = ({ type }) => {
     const newGamingRoom = (type: string, id: string | undefined) => {
         if (id === undefined) {
             return console.log("SIGNIN");
-        } else {
-            io = socketIOClient("http://localhost:3010", {
-                query: { roomId: id },
-            });            
-            router.push(type.split(' ').join(''))
+        } else {             
+            router.push(`${type.split(' ').join('')}/${session?.user.id}`)
         }
 
     }
