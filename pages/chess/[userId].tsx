@@ -6,18 +6,20 @@ import { FC, MutableRefObject, useEffect, useRef, useState } from 'react'
 import Home from '../../components/home/Home'
 import { useRouter } from 'next/router'
 import socketIOClient from "socket.io-client";
+import styles from "./chess.module.css"
+import BoardComponent from '../../components/boardComponent/BoardComponent';
+import { Board } from '../../models/Board';
+import { Player } from '../../models/Player';
+import { Colors } from "../../models/Colors";
+import LostFigures from '../../components/lostFigures/LostFigures';
+import Timer from '../../components/timer/Timer';
 
 
 
 const Chess: FC = () => {
   const router = useRouter()
   const session = useSession()
-  const socketRef:  MutableRefObject<any> = useRef()
- 
-  console.log(router.query.userId);
-  console.log(session?.user.id);
-
-  
+  const socketRef: MutableRefObject<any> = useRef()
 
   useEffect(() => {
     socketRef.current = socketIOClient("http://localhost:3010", {
@@ -35,10 +37,49 @@ const Chess: FC = () => {
     });
   }
 
+  const [board, setBoard] = useState(new Board())
+  const [whitePlayer, setWhitePlayer] = useState(new Player(Colors.WHITE))
+  const [blackPlayer, setBlackPlayer] = useState(new Player(Colors.BLACK))
+  const [currentPlayer, setCurrentPlayer] = useState<Player | null>(null)
+
+  useEffect(() => {
+    restart()
+  }, [])
+
+  function restart() {
+    const newBoard = new Board()
+    newBoard.initCells()
+    newBoard.addFigures()
+    setBoard(newBoard)
+    setCurrentPlayer(whitePlayer)
+  }
+
+  function swapPlayer() {
+    setCurrentPlayer(currentPlayer?.color === Colors.WHITE ? blackPlayer : whitePlayer)
+  }
 
   return (
     <Layout>
       <h2 onClick={testhandler}>Chess page </h2>
+      <div className="chess">
+        < Timer currentPlayer={currentPlayer} restart={restart} />
+        <BoardComponent
+          board={board}
+          setBoard={setBoard}
+          currentPlayer={currentPlayer}
+          swapPlayer={swapPlayer}
+        />
+        <div>
+          <LostFigures
+            title={"Черные фигуры"}
+            figures={board.lostBlackFigures}
+          />
+          <LostFigures
+            title={"Белые фигуры"}
+            figures={board.lostWhiteFigures}
+          />
+        </div>
+      </div>
     </Layout>
   )
 }
