@@ -1,31 +1,56 @@
-import React, { FC, useEffect, useState } from "react"
+import { useSession } from "@supabase/auth-helpers-react";
+import React, { FC, MutableRefObject, useRef, useEffect, useState } from "react"
 import { Board } from "../../models/Board"
 import { Cell } from "../../models/Cell";
 import { Player } from "../../models/Player";
 import CellComponent from "../cellComponent/CellComponent";
 import styles from "./Board.module.css"
+import socketIOClient from "socket.io-client";
+import { useRouter } from 'next/router'
+
 
 interface BoardProps {
     board: Board;
+    myColor: String;
     setBoard: (board: Board) => void;
     currentPlayer: Player | null;
     swapPlayer: () => void;
 }
 
-const BoardComponent: FC<BoardProps> = ({ board, setBoard, currentPlayer, swapPlayer }) => {
+const BoardComponent: FC<BoardProps> = ({ board, setBoard, currentPlayer, swapPlayer, myColor }) => {
     const [selectedCell, setSelectedCell] = useState<Cell | null>(null)
+    const socketRef: MutableRefObject<any> = useRef()
+    const router = useRouter()
+
+    useEffect(() => {
+        socketRef.current = socketIOClient("http://localhost:3010", {
+            query: { roomId: router.query.userId },
+        });
+    }, [router.query.userId])
+
+
 
     useEffect(() => {
         hightlightCells()
     }, [selectedCell])
 
+
+
+
+
     function click(cell: Cell) {
+        console.log(cell);
+        socketRef.current.emit("newBoardEvent", {
+            x: cell.x,
+            y: cell.y
+        });
+        
         if (selectedCell && selectedCell !== cell && selectedCell.figure?.canMove(cell)) {
             selectedCell.moveFigure(cell)
             swapPlayer()
             setSelectedCell(null)
         } else {
-            if (cell.figure?.color === currentPlayer?.color) {
+            if (cell.figure?.color === currentPlayer?.color && cell.figure?.color == myColor) {
                 setSelectedCell(cell)
             }
         }
@@ -43,7 +68,7 @@ const BoardComponent: FC<BoardProps> = ({ board, setBoard, currentPlayer, swapPl
 
     return (
         <div>
-            <h3>Текущий игрок {currentPlayer?.color}</h3>
+            <h3>Текущий игрок {currentPlayer?.color}, мой цвет {myColor}</h3>
             <div className={styles.board} >
                 {board.cells.map((row, index) =>
                     <React.Fragment key={index}>

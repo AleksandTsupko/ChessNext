@@ -13,37 +13,40 @@ import { Player } from '../../models/Player';
 import { Colors } from "../../models/Colors";
 import LostFigures from '../../components/lostFigures/LostFigures';
 import Timer from '../../components/timer/Timer';
+import { Session } from 'inspector'
 
 
 
 const Chess: FC = () => {
   const router = useRouter()
-  const session = useSession()
   const socketRef: MutableRefObject<any> = useRef()
+  const session = useSession()
 
   useEffect(() => {
     socketRef.current = socketIOClient("http://localhost:3010", {
       query: { roomId: router.query.userId },
     });
 
-    socketRef.current.on("newGameEvent", (message: any) => {
-      console.log('newGameEvent', message);
+    socketRef.current.on("newBoardEvent", (message: any) => {
+      console.log('newBoardEvent', message);
     });
   }, [router.query.userId])
-
-  const testhandler = () => {
-    socketRef.current.emit("newGameEvent", {
-      test: "testtt",
-    });
-  }
 
   const [board, setBoard] = useState(new Board())
   const [whitePlayer, setWhitePlayer] = useState(new Player(Colors.WHITE))
   const [blackPlayer, setBlackPlayer] = useState(new Player(Colors.BLACK))
   const [currentPlayer, setCurrentPlayer] = useState<Player | null>(null)
+  const [myColor, setMyColor] = useState<String>(" ")
 
   useEffect(() => {
     restart()
+    console.log(session?.user.id);
+    
+    if (router.query.userId === session?.user.id) {
+      setMyColor("white")
+    } else {
+      setMyColor("black")
+    }
   }, [])
 
   function restart() {
@@ -60,13 +63,14 @@ const Chess: FC = () => {
 
   return (
     <Layout>
-      <h2 onClick={testhandler}>Chess page </h2>
+      <h2 >Chess page </h2>
       <div className="chess">
         < Timer currentPlayer={currentPlayer} restart={restart} />
         <BoardComponent
           board={board}
           setBoard={setBoard}
           currentPlayer={currentPlayer}
+          myColor={myColor}
           swapPlayer={swapPlayer}
         />
         <div>
