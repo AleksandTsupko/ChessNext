@@ -27,27 +27,25 @@ const Chess: FC = () => {
       query: { roomId: router.query.userId },
     });
 
-    socketRef.current.on("newBoardEvent", (message: any) => {
-      console.log('newBoardEvent', message);
-    });
   }, [router.query.userId])
 
   const [board, setBoard] = useState(new Board())
   const [whitePlayer, setWhitePlayer] = useState(new Player(Colors.WHITE))
   const [blackPlayer, setBlackPlayer] = useState(new Player(Colors.BLACK))
   const [currentPlayer, setCurrentPlayer] = useState<Player | null>(null)
-  const [myColor, setMyColor] = useState<String>(" ")
+  const [myColor, setMyColor] = useState<String>("")
 
   useEffect(() => {
     restart()
-    console.log(session?.user.id);
+    console.log("ID",session?.user.id);
+    console.log("ROUTER",router.query.userId);
     
-    if (router.query.userId === session?.user.id) {
+    if (router.query.userId === session?.user.id ) {
       setMyColor("white")
     } else {
       setMyColor("black")
     }
-  }, [])
+  }, [router.query.userId])
 
   function restart() {
     const newBoard = new Board()

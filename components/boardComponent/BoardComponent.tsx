@@ -26,6 +26,13 @@ const BoardComponent: FC<BoardProps> = ({ board, setBoard, currentPlayer, swapPl
         socketRef.current = socketIOClient("http://localhost:3010", {
             query: { roomId: router.query.userId },
         });
+
+        socketRef.current.on("newBoardEvent", (message: any) => {
+            console.log('newBoardEventT', message);
+            const cell: Cell = board.cells[message.y][message.x];
+            console.log(cell);
+            click(cell, message.clicker)
+        });
     }, [router.query.userId])
 
 
@@ -35,16 +42,15 @@ const BoardComponent: FC<BoardProps> = ({ board, setBoard, currentPlayer, swapPl
     }, [selectedCell])
 
 
-
-
-
-    function click(cell: Cell) {
-        console.log(cell);
+    function testClick(cell: Cell) {
         socketRef.current.emit("newBoardEvent", {
             x: cell.x,
-            y: cell.y
+            y: cell.y,
+            clicker: myColor
         });
-        
+    }
+
+    function click(cell: Cell, myColor: string) {
         if (selectedCell && selectedCell !== cell && selectedCell.figure?.canMove(cell)) {
             selectedCell.moveFigure(cell)
             swapPlayer()
@@ -73,7 +79,7 @@ const BoardComponent: FC<BoardProps> = ({ board, setBoard, currentPlayer, swapPl
                 {board.cells.map((row, index) =>
                     <React.Fragment key={index}>
                         {row.map(cell =>
-                            <CellComponent click={click} cell={cell} key={cell.id} selected={cell.x === selectedCell?.x && cell.y === selectedCell?.y} />
+                            <CellComponent click={testClick} cell={cell} key={cell.id} selected={cell.x === selectedCell?.x && cell.y === selectedCell?.y} />
                         )}
                     </React.Fragment>
                 )}
